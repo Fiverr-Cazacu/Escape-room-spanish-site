@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Ceva</ion-title>
+        <ion-buttons slot='primary'>
+            <ion-button (click)='closeModal()'>Close</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list-header>Title</ion-list-header>
+    <ion-list style='padding: 0.3rem 0' [inset]='true'>
+        <ion-item style='font-size: 1.1rem'>{{title}}</ion-item>
+    </ion-list>
+    <ion-list-header>Questions</ion-list-header>
+    <ion-list style='padding: 0.3rem 0' [inset]='true'>
+        <ion-item [button]='true' (click)='openQuestionModal(question)' style='font-size: 1.1rem'
+                  *ngFor='let question of questions'>{{question.question}}</ion-item>
+    </ion-list>
+</ion-content>

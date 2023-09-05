@@ -1,0 +1,29 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Question</ion-title>
+        <ion-buttons slot='primary'>
+            <ion-button (click)='closeModal()'>Close</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+    <ion-content style='height: 100vh'>
+        <ion-list-header>Question</ion-list-header>
+        <ion-list style='padding: 0.3rem 0' [inset]='true'>
+            <ion-item style='font-size: 1.1rem'>{{questionTitle}}</ion-item>
+        </ion-list>
+        <ion-list-header>Answer</ion-list-header>
+        <ion-list style='padding: 0.3rem 0' class='ion-padding-vertical' [inset]='true'>
+            <ion-item style='font-size: 1.1rem'>{{questionAnswer}}</ion-item>
+        </ion-list>
+        <ion-list-header>Clue</ion-list-header>
+        <ion-list style='padding: 0.3rem 0' class='ion-padding-vertical' [inset]='true'>
+            <ion-item style='font-size: 1.1rem'>{{questionClue}}</ion-item>
+        </ion-list>
+        <ion-list-header>Answers</ion-list-header>
+        <ion-list style='padding: 0.3rem 0' class='ion-padding-vertical' [inset]='true'>
+            <ion-item style='font-size: 1.1rem; color: var(--ion-color-success)'>{{correctAnswers}} correct answers
+            </ion-item>
+            <ion-item style='font-size: 1.1rem; color: var(--ion-color-danger)'>{{wrongAnswers}} wrong answers
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-header>
