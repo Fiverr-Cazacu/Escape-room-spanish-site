@@ -15,7 +15,7 @@ app.use(cors())
 
 mongoose.connect(process.env.MONGODB_URI || "")
     .then(() => console.log("✅ Connected to database"))
-    .catch(() => console.log("❌ Failed to connect to database"));
+    .catch((e) => console.log("❌ Failed to connect to database", e));
 
 app.use("/api/rooms", RoomsRouter);
 app.use("/api/sessions", SessionsRouter);
