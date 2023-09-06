@@ -9,6 +9,10 @@ import TeamRouter from "./routers/teams";
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+const cors = require('cors');
+app.use(cors())
+
 mongoose.connect(process.env.MONGODB_URI || "")
     .then(() => console.log("✅ Connected to database"))
     .catch(() => console.log("❌ Failed to connect to database"));

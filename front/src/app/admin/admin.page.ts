@@ -3,12 +3,18 @@ import { ModalController } from '@ionic/angular';
 import { QuestionModalComponent } from './question-modal/question-modal.component';
 import { FormBuilder, Validators } from '@angular/forms';
 import { EscapeRoomModalComponent } from './escape-room-modal/escape-room-modal.component';
+import { RoomState } from '../state-management/room.state';
+import { Observable } from 'rxjs';
+import { GetRooms } from '../state-management/room.action';
+import { Select, Store } from '@ngxs/store';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.page.html',
 })
 export class AdminPage {
+  @Select(RoomState.getRoomList) userInfo!: Observable<any>;
+
   currentQuestion = this._fb.group({
     question: ['', [Validators.required]],
     answer: ['', [Validators.required]],
@@ -117,7 +123,10 @@ export class AdminPage {
   protected readonly document = document;
   protected readonly console = console;
 
-  constructor(private _modal: ModalController, private _fb: FormBuilder) {
+  constructor(private _modal: ModalController, private _fb: FormBuilder, private _store: Store) { }
+
+  ngOnInit() {
+    this._store.dispatch(new GetRooms());
   }
 
   async canDismiss(data?: any, role?: string) {

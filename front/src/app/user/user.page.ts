@@ -25,7 +25,7 @@ export class UserPage {
         clue: 'barosan',
       },
     ],
-    deadline: new Date('Sept 5, 2023 16:30:00').getTime(),
+    deadline: new Date('Sept 6, 2023 16:30:00').getTime(),
     isFinished: false
   };
   answers: any = [];
