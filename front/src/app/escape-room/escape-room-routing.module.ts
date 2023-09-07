@@ -5,7 +5,7 @@ import { EscapeRoomComponent } from './escape-room.component';
 
 const routes: Routes = [
   {
-    path: ':room',
+    path: ':session',
     component: EscapeRoomComponent
   }
 ];

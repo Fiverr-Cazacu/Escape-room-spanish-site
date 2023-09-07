@@ -1,6 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Store } from '@ngxs/store';
 
 @Component({
   selector: 'app-escape-room',
@@ -9,15 +9,32 @@ import { Store } from '@ngxs/store';
 })
 export class EscapeRoomComponent {
 
-  roomName = 'Test';
+  session: any;
+
+  room: any;
 
   sessionStarted = false;
 
-  constructor (private _route: ActivatedRoute, private _store: Store) { }
+  constructor (private _route: ActivatedRoute, private _http: HttpClient) { }
 
   ngOnInit(): void {
-    const roomID = this._route.snapshot.paramMap.get('room');
+    const sessionID = this._route.snapshot.paramMap.get('session');
 
-    this._store.dispatch
+    this._http.get('https://escape-room-site.onrender.com/api/sessions/'+sessionID).subscribe({
+      next: (val: any) => {
+        this.session = val;
+        console.log(val);
+        this._http.get('https://escape-room-site.onrender.com/api/rooms/'+val.roomId).subscribe({
+          next: (val2) => {
+            this.room = val2;
+          }
+        });
+      }
+    })
+    this._http.get('https://escape-room-site.onrender.com/api/sessions/'+sessionID+'/running').subscribe({
+      next: (val) => {
+        console.log('Running', val)
+      }
+    })
   }
 }

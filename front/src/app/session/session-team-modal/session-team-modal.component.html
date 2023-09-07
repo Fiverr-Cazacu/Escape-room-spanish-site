@@ -9,7 +9,7 @@
 <ion-content>
     <ion-list-header>Submissions</ion-list-header>
     <ion-list [inset]='true'>
-        <ion-item [button]='true'><p>answer</p>
+        <ion-item *ngFor="let answer of team.answers" [button]='true'><p>{{answer}}</p>
         </ion-item>
     </ion-list>
 </ion-content>
