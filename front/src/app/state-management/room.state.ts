@@ -1,7 +1,7 @@
 import {State, Action, StateContext, Selector} from '@ngxs/store';
 import { Room } from './models';
-import {AddRoom, DeleteRoom, GetRooms, UpdateRoom} from './room.action';
-import { RoomService } from './room.service';
+import {AddRoom, DeleteRoom, GetRooms, UpdateRoom} from './actions';
+import { RoomService } from './http.service';
 import {tap} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
@@ -52,7 +52,7 @@ export class RoomState {
         return this.roomService.updateRoom(payload, id).pipe(tap((result) => {
             const state = getState();
             const roomList = [...state.rooms];
-            const roomIndex = roomList.findIndex(item => item.id === id);
+            const roomIndex = roomList.findIndex(item => item._id === id);
             roomList[roomIndex] = result;
             setState({
                 ...state,
@@ -66,7 +66,7 @@ export class RoomState {
     deleteRoom({getState, setState}: StateContext<RoomStateModel>, {id}: DeleteRoom) {
         return this.roomService.deleteRoom(id).pipe(tap(() => {
             const state = getState();
-            const filteredArray = state.rooms.filter(item => item.id !== id);
+            const filteredArray = state.rooms.filter(item => item._id !== id);
             setState({
                 ...state,
                 rooms: filteredArray,

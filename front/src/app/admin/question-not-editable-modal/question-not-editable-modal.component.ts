@@ -9,8 +9,6 @@ export class QuestionNotEditableModalComponent {
   @Input() questionTitle: string | undefined;
   @Input() questionAnswer: string | undefined;
   @Input() questionClue: string | undefined;
-  @Input() correctAnswers: any;
-  @Input() wrongAnswers: any;
 
   constructor(private _modal: ModalController) {
   }

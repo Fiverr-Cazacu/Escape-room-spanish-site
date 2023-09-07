@@ -5,18 +5,17 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { EscapeRoomModalComponent } from './escape-room-modal/escape-room-modal.component';
 import { RoomState } from '../state-management/room.state';
 import { Observable } from 'rxjs';
-import { GetRooms } from '../state-management/room.action';
+import { AddRoom, GetRooms } from '../state-management/actions';
 import { Select, Store } from '@ngxs/store';
+import { Room } from '../state-management/models';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.page.html',
 })
 export class AdminPage {
-  @Select(RoomState.getRoomList) userInfo!: Observable<any>;
-
   currentQuestion = this._fb.group({
-    question: ['', [Validators.required]],
+    statement: ['', [Validators.required]],
     answer: ['', [Validators.required]],
     clue: ['', [Validators.required]]
   });
@@ -28,91 +27,7 @@ export class AdminPage {
     })
   };
 
-  data: any = [
-    {
-      title: 'Ceva',
-      questions: [
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-      ],
-      peopleAnswered: 3
-    },
-    {
-      title: 'Cineva',
-      questions: [
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-      ],
-      peopleAnswered: 3
-    },
-    {
-      title: 'wow',
-      questions: [
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-        {
-          question: 'Cine este Iohannis?',
-          answer: 'jmecher',
-          clue: 'barosan',
-          correctAnswers: 10,
-          wrongAnswers: 3
-        },
-      ],
-      peopleAnswered: 3
-    },
-
-  ];
+  @Select(RoomState.getRoomList) data!: Observable<Room[]>;
   @ViewChild('newQuestion') newQuestion: any;
   @ViewChild('createModal') createModal: any;
   erTitleToast: boolean = false;
@@ -137,11 +52,9 @@ export class AdminPage {
     const modal = await this._modal.create({
       component: QuestionModalComponent,
       componentProps: {
-        questionTitle: question.question,
+        questionTitle: question.statement,
         questionAnswer: question.answer,
         questionClue: question.clue,
-        correctAnswers: question.correctAnswers,
-        wrongAnswers: question.wrongAnswers
       },
       presentingElement: document.querySelector('ion-modal')!,
     });
@@ -157,9 +70,9 @@ export class AdminPage {
     const modal = await this._modal.create({
       component: EscapeRoomModalComponent,
       componentProps: {
-        title: escapeRoom.title,
+        title: escapeRoom.name,
         questions: escapeRoom.questions,
-        peopleAnswered: escapeRoom.peopleAnswered
+        currentQuestionID: escapeRoom._id
       },
       presentingElement: document.querySelector('ion-router-outlet')!,
     });
@@ -169,11 +82,9 @@ export class AdminPage {
   createQuestion() {
     if (this.currentQuestion.valid) {
       this.currentEscapeRoom.questions.push(this.currentQuestion.value);
-      this.currentEscapeRoom.questions[this.currentEscapeRoom.questions.length - 1].correctAnswers = 0;
-      this.currentEscapeRoom.questions[this.currentEscapeRoom.questions.length - 1].wrongAnswers = 0;
       this.currentQuestion.reset();
       this.newQuestion.dismiss();
-    } else if (this.currentQuestion.value.question?.length === 0) {
+    } else if (this.currentQuestion.value.statement?.length === 0) {
       this.qQuestionToast = true;
     } else if (this.currentQuestion.value.answer?.length === 0) {
       this.qAnswerToast = true;
@@ -184,11 +95,25 @@ export class AdminPage {
 
   createEscapeRoom() {
     if (this.currentEscapeRoom.formGroup.valid && this.currentEscapeRoom.questions.length > 0) {
-      this.data.push({
-        title: this.currentEscapeRoom.formGroup.controls.title.value,
-        questions: this.currentEscapeRoom.questions,
-        peopleAnswered: 0
+      this._store.dispatch(new AddRoom({
+        name: this.currentEscapeRoom.formGroup.controls.title.value,
+        description: "description",
+        questions: this.currentEscapeRoom.questions
+      })).subscribe({
+        next: (val) => {
+          console.log("Room created");
+        },
+        error: (err) => {
+          console.log("Room not created");
+          console.log(err);
+        }
       });
+      console.log({
+        name: this.currentEscapeRoom.formGroup.controls.title.value,
+        description: "description",
+        questions: this.currentEscapeRoom.questions
+      })
+      
       this.currentEscapeRoom.formGroup.reset();
       this.currentEscapeRoom.questions = [];
       this.createModal.dismiss();

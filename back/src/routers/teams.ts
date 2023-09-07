@@ -51,7 +51,7 @@ router.post("/", async (req: Request, res: Response) => {
         return res.status(500).end();
     session.teams.push({
         name: req.body.name,
-        answers: (new Array(room.questions.length)).map(() => null),
+        answers: [],
         score: 0
     });
     session.save()
@@ -98,10 +98,7 @@ router.post("/:id/submit", (req: Request, res: Response) => {
                     return res.status(400).json({
                         error: "Question already answered."
                     });
-                team.answers[req.body.questionIndex] = (
-                    req.body.answer === 
-                    room.questions[req.body.questionIndex].answer
-                );
+                team.answers[req.body.questionIndex] = ( req.body.answer );
                 res.json(await session.save());
             } catch {
                 return res.status(500).end();

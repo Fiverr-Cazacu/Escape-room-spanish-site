@@ -7,13 +7,16 @@ const routes: Routes = [
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminPageModule)
   },
   {
-    path: 'escapeRoom',
+    path: 'play',
     loadChildren: () => import('./user/user.module').then(m => m.UserPageModule)
   },
   {
-    path: '',
-    redirectTo: 'admin',
-    pathMatch: 'full'
+    path: 'escape-room',
+    loadChildren: () => import('./escape-room/escape-room.module').then(m => m.EscapeRoomModule)
+  },
+  {
+    path: 'session',
+    loadChildren: () => import('./session/session.module').then(m => m.SessionModule)
   }
 ];
 

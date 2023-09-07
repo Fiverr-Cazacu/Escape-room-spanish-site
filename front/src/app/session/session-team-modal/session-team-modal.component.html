@@ -8,16 +8,8 @@
 </ion-header>
 <ion-content>
     <ion-list-header>Submissions</ion-list-header>
-    <form [formGroup]="teamForm" (ngSubmit)="submit()">
-        <ion-button type="submit" id='new-question-trigger' class='ion-padding-horizontal ion-margin-top' expand='block'>
-            Add new team
-        </ion-button>
-        <ion-list [inset]='true'>
-            <ion-input formControlName="name" class='ion-padding' placeholder='Enter team name...'></ion-input>
-        </ion-list>
-    </form>
     <ion-list [inset]='true'>
-        <ion-item *ngFor="let team of session.teams" (click)="openTeamModal(team, session)" [button]='true'><p>{{team.name}}</p>
+        <ion-item [button]='true'><p>answer</p>
         </ion-item>
     </ion-list>
 </ion-content>

@@ -1,4 +1,4 @@
-import { Room } from "./models";
+import { Room, Session } from "./models";
 
 export class AddRoom {
     static readonly type = '[Room] Add';
@@ -30,4 +30,15 @@ export class SetSelectedRoom {
 
     constructor(public payload: Room) {
     }
+}
+
+
+export class GetSessions {
+    static readonly type = '[Session] Get';
+}
+
+export class AddSession {
+    static readonly type = '[Session] Add';
+
+    constructor(public payload: Session) { }
 }

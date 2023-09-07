@@ -3,7 +3,7 @@ import mongoose  from "mongoose";
 export interface ITeam {
     _id?: mongoose.Schema.Types.ObjectId,
     name: string,
-    answers: (boolean | null)[],
+    answers: string[],
     score: number
 }
 

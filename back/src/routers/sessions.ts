@@ -60,6 +60,7 @@ router.post("/", (req: Request, res: Response) => {
     if (error)
         return res.status(400).json({error});
     const session = new Session(req.body);
+    console.log(session)
     session.save()
         .then((session) => res.send(session))
         .catch(() => res.status(400).json({
