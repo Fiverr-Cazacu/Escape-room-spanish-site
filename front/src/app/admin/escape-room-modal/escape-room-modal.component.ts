@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { QuestionNotEditableModalComponent } from '../question-not-editable-modal/question-not-editable-modal.component';
 import { Store } from '@ngxs/store';
 import { DeleteRoom } from 'src/app/state-management/actions';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-escape-room-modal',
@@ -15,7 +16,7 @@ export class EscapeRoomModalComponent {
 
   @Input() currentQuestionID!: string;
 
-  constructor(private _modal: ModalController, private _store: Store) {
+  constructor(private _modal: ModalController, private _http: HttpClient) {
   }
 
   closeModal() {
@@ -23,7 +24,7 @@ export class EscapeRoomModalComponent {
   }
 
   deleteRoom() {
-    this._store.dispatch(new DeleteRoom(this.currentQuestionID)).subscribe({
+    this._http.delete('https://escape-room-site.onrender.com/api/rooms/' + this.currentQuestionID).subscribe({
       next: () => window.location.reload()
     });
   }

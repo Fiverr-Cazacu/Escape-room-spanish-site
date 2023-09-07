@@ -88,7 +88,7 @@
                 </ion-content>
             </ng-template>
         </ion-modal>
-        <ion-card (click)='openEscapeRoomModal(item)' [button]='true' *ngFor='let item of data | async'>
+        <ion-card (click)='openEscapeRoomModal(item)' [button]='true' *ngFor='let item of data'>
             <ion-card-header>
                 <ion-card-title>{{item.name}}</ion-card-title>
             </ion-card-header>

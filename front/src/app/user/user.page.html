@@ -12,15 +12,14 @@
     </ion-header>
     <div style='font-size: 2rem; display: flex; justify-content: center; font-weight: 500' *ngIf='distance > 0 && ! data.isFinished'>{{hours}}:{{minutes}}:{{seconds}}</div>
     <ion-list-header *ngIf='distance <= 0 && ! data.isFinished'>Time expired</ion-list-header>
-    <ion-list-header *ngIf='distance > 0 && ! data.isFinished && data.questions.length'
-                     style='font-size: 1.375rem'>{{data.questions[currentQuestion].question}}</ion-list-header>
+    <ion-list-header style='font-size: 1.375rem'>{{data.question}}</ion-list-header>
     <ion-button *ngIf='distance > 0 && ! data.isFinished' color='tertiary' class='ion-padding-horizontal' expand='block'
-                (click)='isClue = !isClue'>
+                (click)='isClue = !isClue; requestClue()'>
         <ion-icon style='margin-right: 0.5rem' [name]='isClue ? "eye-off-outline" : "eye-outline"'></ion-icon>
         {{isClue ? 'Hide Clue' : 'Show clue'}}
     </ion-button>
     <ion-button *ngIf='distance > 0 && ! data.isFinished' color='tertiary' class='ion-padding-horizontal' expand='block'
-                (click)='isClue = !isClue'>
+                (click)='giveUp()'>
         <ion-icon style='margin-right: 0.5rem' [name]='isClue ? "eye-off-outline" : "eye-outline"'></ion-icon>
         Give up on qustion
     </ion-button>

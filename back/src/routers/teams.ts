@@ -14,16 +14,13 @@ router.get("/:id", (req: Request, res: Response) => {
                 });
             session.teams.forEach(team => {
                 if (team._id?.toString() === req.params.id)
-                    res.json(team);
-                    return;
-            });
-            res.status(404).json({
-                error: "Team not found."
+                    return res.json(team);
+
             });
         })
-        .catch(() => res.status(404).json({
+        .catch((err) => {console.log(err); res.status(404).json({
             error: "Session not found."
-        }));
+        })});
 });
 
 router.get("/state/:id", (req: Request, res: Response) => {
@@ -169,7 +166,7 @@ const submitQuestionSchema = Joi.object({
     answer: Joi.string().required()
 });
 
-router.post("/:id/submit", (req: Request, res: Response) => {
+router.post("/submit/:id", (req: Request, res: Response) => {
     const {error} = submitQuestionSchema.validate(req.body);
     if (error)
         return res.status(400).json(error);

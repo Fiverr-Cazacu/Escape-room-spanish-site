@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { AddRoom, GetRooms } from '../state-management/actions';
 import { Select, Store } from '@ngxs/store';
 import { Room } from '../state-management/models';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
@@ -27,7 +28,7 @@ export class AdminPage {
     })
   };
 
-  @Select(RoomState.getRoomList) data!: Observable<Room[]>;
+  data: any = [];
   @ViewChild('newQuestion') newQuestion: any;
   @ViewChild('createModal') createModal: any;
   erTitleToast: boolean = false;
@@ -38,10 +39,14 @@ export class AdminPage {
   protected readonly document = document;
   protected readonly console = console;
 
-  constructor(private _modal: ModalController, private _fb: FormBuilder, private _store: Store) { }
+  constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
 
   ngOnInit() {
-    this._store.dispatch(new GetRooms());
+    this._http.get('https://escape-room-site.onrender.com/api/rooms').subscribe({
+      next: (val) => {
+        this.data = val;
+      }
+    });
   }
 
   async canDismiss(data?: any, role?: string) {
@@ -95,11 +100,11 @@ export class AdminPage {
 
   createEscapeRoom() {
     if (this.currentEscapeRoom.formGroup.valid && this.currentEscapeRoom.questions.length > 0) {
-      this._store.dispatch(new AddRoom({
+      this._http.post('https://escape-room-site.onrender.com/api/rooms', {
         name: this.currentEscapeRoom.formGroup.controls.title.value,
         description: "description",
         questions: this.currentEscapeRoom.questions
-      })).subscribe({
+      }).subscribe({
         next: (val) => {
           console.log("Room created");
         },

@@ -15,16 +15,15 @@ export class UserPage {
   clue: string = '';
 
   data: any = {
-    title: 'Escape room',
-    questions: [],
-    deadline: new Date('Sept 7, 2023 16:30:00').getTime(),
+    title: '',
+    question: '',
+    deadline: new Date('Sept 8, 2023 16:30:00').getTime(),
     isFinished: false
   };
   answers: any = [];
   answerForm = this._fb.group({
     answer: ['', [Validators.required]]
   });
-  currentQuestion: number = 0;
   isClue: boolean = false;
 
   hours: string = '';
@@ -55,8 +54,20 @@ export class UserPage {
 
     console.log(699)
 
-    this._http.get('https://escape-room-site.onrender.com/api/teams/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
-      next: (val) => {
+    this._http.get('http://localhost:8000/api/teams/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+      next: (val: any) => {
+        this.data.title = val.name;
+        //this.data.deadline = val.end;
+        //console.log(val.end)
+      },
+      error: (err) => {
+        console.log(err)
+      }
+    });
+
+    this._http.get('http://localhost:8000/api/teams/state/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+      next: (val: any) => {
+        this.data.question = val.statement;
         console.log(val)
       },
       error: (err) => {
@@ -70,18 +81,28 @@ export class UserPage {
   }
 
   requestClue() {
-    this._http.get('https://escape-room-site.onrender.com/api/teams/clue/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+    if (this.clue == '') {
+      this._http.get('http://localhost:8000/api/teams/clue/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+        next: (val: any) => {
+          this.clue = val.clue
+          console.log(val)
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      });
+    }
+  }
+
+  giveUp() {
+    this._http.get('http://localhost:8000/api/teams/giveup/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
       next: (val: any) => {
-        this.clue = val.clue
         console.log(val)
+        window.location.reload();
       },
       error: (err) => {
         console.log(err)
       }
-    })
-  }
-
-  giveUp() {
-
+    });
   }
 }
