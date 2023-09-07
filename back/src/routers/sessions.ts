@@ -43,6 +43,7 @@ router.get("/:id/running", (req: Request, res: Response) => {
             const finishDate = session.startedAt;
             finishDate.setMinutes(finishDate.getMinutes() + session.duration);
             const now = new Date();
+            console.log(now, finishDate, Number(finishDate) - Number(now));
             return res.json(+now - +finishDate);
         })
         .catch(() => res.status(404).json({

@@ -11,7 +11,7 @@ export class EscapeRoomComponent {
 
   session: any;
 
-  room: any;
+  room: any = {name: ''};
 
   sessionStarted = false;
 
