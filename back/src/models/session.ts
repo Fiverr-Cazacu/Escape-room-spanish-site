@@ -4,7 +4,8 @@ export interface ITeam {
     _id?: mongoose.Schema.Types.ObjectId,
     name: string,
     answers: string[],
-    score: number
+    score: number,
+    reachedAnswer: number
 }
 
 const teamSchema = new mongoose.Schema<ITeam>({
@@ -15,6 +16,11 @@ const teamSchema = new mongoose.Schema<ITeam>({
     },
     answers: [mongoose.Schema.Types.Mixed],
     score: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    reachedAnswer: {
         type: Number,
         required: true,
         default: 0

@@ -3,9 +3,9 @@
         <ion-title>{{ room.name }}</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-button expand="block">
-    {{ sessionStarted?'Stop session':'Start session'}}
+<ion-button expand="block" (click)="started?stopSession():startSession()">
+    {{ started?'Stop session':'Start session'}}
 </ion-button>
 <h1 style="color: white;">
-    Timer: {{'Not started'}}
+    Timer: {{started?(-started):"Session not started yet"}}
 </h1>

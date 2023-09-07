@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { EndedComponent } from './ended/ended.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path: 'session',
     loadChildren: () => import('./session/session.module').then(m => m.SessionModule)
+  },
+  {
+    path: 'ended',
+    component: EndedComponent
   }
 ];
 

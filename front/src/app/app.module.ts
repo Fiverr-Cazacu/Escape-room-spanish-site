@@ -9,9 +9,10 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RoomState } from './state-management/room.state';
+import { EndedComponent } from './ended/ended.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, EndedComponent],
   imports: [BrowserModule, IonicModule.forRoot({mode: 'ios'}), AppRoutingModule, HttpClientModule, NgxsModule.forRoot([
     RoomState
   ])],

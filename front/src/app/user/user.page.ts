@@ -1,31 +1,23 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.page.html',
 })
 export class UserPage {
+
+  sessionID: string | null = '';
+  teamID: string | null = '';
+
+  clue: string = '';
+
   data: any = {
     title: 'Escape room',
-    questions: [
-      {
-        question: 'Cine este Iohannis?',
-        answer: 'jmecher',
-        clue: 'barosan',
-      },
-      {
-        question: 'Cine este Putin?',
-        answer: 'jmecher',
-        clue: 'barosan',
-      },
-      {
-        question: 'Cine este Trump?',
-        answer: 'jmecher',
-        clue: 'barosan',
-      },
-    ],
-    deadline: new Date('Sept 6, 2023 16:30:00').getTime(),
+    questions: [],
+    deadline: new Date('Sept 7, 2023 16:30:00').getTime(),
     isFinished: false
   };
   answers: any = [];
@@ -54,21 +46,42 @@ export class UserPage {
     this.seconds = seconds.toString().padStart(2, '0');
   }, 1000);
 
-  constructor(private _fb: FormBuilder) {
+  constructor(private _fb: FormBuilder, private _route: ActivatedRoute, private _http: HttpClient) {
+  }
+
+  ngOnInit() {
+    this.sessionID = this._route.snapshot.paramMap.get('sessionID');
+    this.teamID = this._route.snapshot.paramMap.get('teamID');
+
+    console.log(699)
+
+    this._http.get('https://escape-room-site.onrender.com/api/teams/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+      next: (val) => {
+        console.log(val)
+      },
+      error: (err) => {
+        console.log(err)
+      }
+    });
   }
 
   onSubmit() {
-    if (this.answerForm.valid) {
-      if (this.currentQuestion >= this.data.questions.length - 1) {
-        this.data.isFinished = true;
-        this.answers.push(this.answerForm.value);
-        console.log(this.answers);
-      } else {
-        this.currentQuestion++;
-        this.answers.push(this.answerForm.value);
-        this.answerForm.reset();
-        this.isClue = false;
+    
+  }
+
+  requestClue() {
+    this._http.get('https://escape-room-site.onrender.com/api/teams/clue/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+      next: (val: any) => {
+        this.clue = val.clue
+        console.log(val)
+      },
+      error: (err) => {
+        console.log(err)
       }
-    }
+    })
+  }
+
+  giveUp() {
+
   }
 }

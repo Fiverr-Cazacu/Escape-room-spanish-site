@@ -15,11 +15,113 @@ router.get("/:id", (req: Request, res: Response) => {
             session.teams.forEach(team => {
                 if (team._id?.toString() === req.params.id)
                     res.json(team);
+                    return;
+            });
+            res.status(404).json({
+                error: "Team not found."
             });
         })
         .catch(() => res.status(404).json({
             error: "Session not found."
         }));
+});
+
+router.get("/state/:id", (req: Request, res: Response) => {
+    Session.findById(req.query.sessionId).then(async session => {
+        if (session === null) {
+            return res.status(404).json({
+                error: "Session not found."
+            });
+        }
+        const room = await Room.findById(session.roomId);
+
+        if (!room) {
+            return res.status(500).end();
+        }
+
+        session.teams.forEach(team => {
+            if (team._id?.toString() === req.params.id) {
+                if (team.reachedAnswer == room.questions.length) {
+                    return res.json({
+                        score: team.score,
+                        end: +(session.startedAt ?? 0) + session.duration,
+                        reached: team.reachedAnswer
+                    });
+                }
+                return res.json({
+                    statement: room.questions[team.reachedAnswer].statement,
+                    score: team.score,
+                    end: +(session.startedAt ?? 0) + session.duration,
+                    reached: team.reachedAnswer
+                });
+            }
+        });
+    });
+});
+
+router.get("/clue/:id", (req: Request, res: Response) => {
+    Session.findById(req.query.sessionId).then(async session => {
+        if (session === null) {
+            return res.status(404).json({
+                error: "Session not found."
+            });
+        }
+        const room = await Room.findById(session.roomId);
+
+        if (!room) {
+            return res.status(500).end();
+        }
+
+        session.teams.forEach(team => {
+            if (team._id?.toString() === req.params.id) {
+                if (team.reachedAnswer == room.questions.length) {
+                    return res.status(400).json({
+                        error: "Reached end."
+                    });
+                }
+                team.score -= 1;
+                session.save()
+                .then(() => res.json({
+                    clue: room.questions[team.reachedAnswer].clue
+                }))
+                .catch(() => res.status(404).json({
+                    error: "Room not found."
+                }));
+            }
+        });
+    });
+});
+
+router.get("/giveup/:id", (req: Request, res: Response) => {
+    Session.findById(req.query.sessionId).then(async session => {
+        if (session === null) {
+            return res.status(404).json({
+                error: "Session not found."
+            });
+        }
+        const room = await Room.findById(session.roomId);
+
+        if (!room) {
+            return res.status(500).end();
+        }
+
+        session.teams.forEach((team) => {
+            if (team._id?.toString() === req.params.id) {
+                if (team.reachedAnswer == room.questions.length) {
+                    return res.status(400).json({
+                        error: "Reached end."
+                    });
+                }
+                team.reachedAnswer++;
+                team.score -= 2;
+                session.save()
+                    .then((session) => res.send(session))
+                    .catch(() => res.status(404).json({
+                        error: "Room not found."
+                    }));
+            }
+        });
+    });
 });
 
 const createTeamSchema = Joi.object({
@@ -52,7 +154,8 @@ router.post("/", async (req: Request, res: Response) => {
     session.teams.push({
         name: req.body.name,
         answers: [],
-        score: 0
+        score: 0,
+        reachedAnswer: 0
     });
     session.save()
         .then((session) => res.send(session))

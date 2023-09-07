@@ -9,11 +9,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class EscapeRoomComponent {
 
+  started: any = false;
+
   session: any;
 
   room: any = {name: ''};
-
-  sessionStarted = false;
 
   constructor (private _route: ActivatedRoute, private _http: HttpClient) { }
 
@@ -34,7 +34,20 @@ export class EscapeRoomComponent {
     this._http.get('https://escape-room-site.onrender.com/api/sessions/'+sessionID+'/running').subscribe({
       next: (val) => {
         console.log('Running', val)
+        this.started = val;
       }
     })
+  }
+
+  startSession() {
+    this._http.put('https://escape-room-site.onrender.com/api/sessions/'+this.session._id+'/start', {}).subscribe({
+      next: () => window.location.reload()
+    });
+  }
+
+  stopSession() {
+    this._http.put('https://escape-room-site.onrender.com/api/sessions/'+this.session._id+'/stop', {}).subscribe({
+      next: () => window.location.reload()
+    });
   }
 }
