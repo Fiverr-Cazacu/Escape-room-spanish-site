@@ -94,11 +94,7 @@ router.post("/:id/submit", (req: Request, res: Response) => {
                     return res.status(400).json({
                         error: "Invalid question index."
                     });
-                if (team.answers[req.body.questionIndex] !== null)
-                    return res.status(400).json({
-                        error: "Question already answered."
-                    });
-                team.answers[req.body.questionIndex] = ( req.body.answer );
+                team.answers.push("Answered \"" + req.body.answer + "\" at " + new Date());
                 res.json(await session.save());
             } catch {
                 return res.status(500).end();

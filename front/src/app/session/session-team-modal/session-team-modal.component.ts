@@ -13,6 +13,10 @@ export class SessionTeamModal {
 
   constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
 
+  ngOnInit() {
+    console.log(this.team)
+  }
+
   closeModal() {
     this._modal.dismiss();
   }
