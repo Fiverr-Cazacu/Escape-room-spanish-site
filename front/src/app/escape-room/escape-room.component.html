@@ -3,9 +3,20 @@
         <ion-title>{{ room.name }}</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-button expand="block" (click)="started?stopSession():startSession()">
-    {{ started?'Stop session':'Start session'}}
-</ion-button>
-<h1 style="color: white;">
-    Timer: {{started?(-started):"Session not started yet"}}
-</h1>
+<ion-content>
+    <ion-button (click)="watched = !watched" *ngIf="!watched" expand="block">
+        Begin escape room
+    </ion-button>
+    <ion-row>
+        <iframe style="background-color: aliceblue;" *ngIf="watched" width="560" height="315" src="https://www.youtube.com/embed/0M6Ly-Rorv4?si=bdcEsmo_T7mHLO7m&showinfo=0&controls=0&autohide=1" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope;" allowfullscreen></iframe>
+    </ion-row>
+    <ion-button *ngIf="watched" expand="block" (click)="started?stopSession():startSession()">
+        {{ started?'Stop session':'Start session'}}
+    </ion-button>
+    <h1  *ngIf="watched" style="color: white;">
+        Timer: {{started?(distance < 0?"Finished":(hours + ':' + minutes + ':' + seconds)):"Not started"}}
+    </h1>
+    <ion-list *ngIf="distance < 0">
+        <ion-item *ngFor="let team of session.teams; let i = index">{{i + 1}}. {{team.name}}: {{team.score}} points; Question: {{team.reachedAnswer + 1}}</ion-item>
+    </ion-list>
+</ion-content>

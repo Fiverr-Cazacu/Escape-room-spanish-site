@@ -20,4 +20,8 @@ export class SessionTeamModal {
   closeModal() {
     this._modal.dismiss();
   }
+
+  locationOrigin() {
+    return window.location.origin
+  }
 }

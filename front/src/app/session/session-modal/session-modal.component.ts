@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { SessionTeamModal } from '../session-team-modal/session-team-modal.component';
+import { link } from 'src/app/link';
 
 @Component({
   selector: 'app-session-modal',
@@ -25,7 +26,7 @@ export class SessionModalComponent {
 
   submit() {
     if (this.teamForm.valid) {
-      this._http.post('https://escape-room-site.onrender.com/api/teams?sessionId=' + this.session._id, this.teamForm.getRawValue()).subscribe({
+      this._http.post(link+'teams?sessionId=' + this.session._id, this.teamForm.getRawValue()).subscribe({
         next: (val) => {console.log(val); window.location.reload()},
         error: (err) => console.log(err)
       })
@@ -42,5 +43,9 @@ export class SessionModalComponent {
       presentingElement: document.querySelector('ion-router-outlet')!,
     });
     return await modal.present();
+  }
+
+  locationOrigin() {
+    return window.location.origin;
   }
 }

@@ -7,6 +7,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+    <p class="ion-padding">{{locationOrigin()}}/play/{{session._id}}/{{team._id}}</p>
     <ion-list-header>Submissions</ion-list-header>
     <ion-list [inset]='true'>
         <ion-item *ngFor="let answer of team.answers" [button]='true'><p>{{answer}}</p>

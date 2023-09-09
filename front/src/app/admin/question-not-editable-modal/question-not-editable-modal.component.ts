@@ -6,9 +6,8 @@ import { ModalController } from '@ionic/angular';
   templateUrl: './question-not-editable-modal.component.html',
 })
 export class QuestionNotEditableModalComponent {
-  @Input() questionTitle: string | undefined;
-  @Input() questionAnswer: string | undefined;
-  @Input() questionClue: string | undefined;
+  @Input() question: any;
+
 
   constructor(private _modal: ModalController) {
   }

@@ -12,113 +12,26 @@ router.get("/:id", (req: Request, res: Response) => {
                 return res.status(404).json({
                     error: "Session not found."
                 });
-            session.teams.forEach(team => {
-                if (team._id?.toString() === req.params.id)
-                    return res.json(team);
-
+            session.teams.forEach(async team => {
+                if (team._id?.toString() === req.params.id){
+                    const room = await Room.findById(session.roomId);
+                    console.log(team.answered)
+                    return res.json({
+                        roomName: room?.name,
+                        questions: room?.questions.map((el, i) => {
+                            console.log({statement: el.statement, clue: team.clued[i]?el.clue:null, clueImage: team.clued[i]?el.clueImage:null, answered: team.answered[i], answeredImage: team.answered[i]=='gave up'?el.answerImage:null});
+                            return {statement: el.statement, clue: team.clued[i]?el.clue:null, clueImage: team.clued[i]?el.clueImage:null, answered: team.answered[i], answeredImage: team.answered[i]=='gave up'?el.answerImage:null}
+                        }),
+                        teamName: team.name,
+                        score: team.score,
+                        deadline: new Date(session.startedAt ?? new Date()).getTime() + session.duration
+                    })
+                }
             });
         })
         .catch((err) => {console.log(err); res.status(404).json({
             error: "Session not found."
         })});
-});
-
-router.get("/state/:id", (req: Request, res: Response) => {
-    Session.findById(req.query.sessionId).then(async session => {
-        if (session === null) {
-            return res.status(404).json({
-                error: "Session not found."
-            });
-        }
-        const room = await Room.findById(session.roomId);
-
-        if (!room) {
-            return res.status(500).end();
-        }
-
-        session.teams.forEach(team => {
-            if (team._id?.toString() === req.params.id) {
-                if (team.reachedAnswer == room.questions.length) {
-                    return res.json({
-                        score: team.score,
-                        end: +(session.startedAt ?? 0) + session.duration,
-                        reached: team.reachedAnswer
-                    });
-                }
-                return res.json({
-                    statement: room.questions[team.reachedAnswer].statement,
-                    score: team.score,
-                    end: +(session.startedAt ?? 0) + session.duration,
-                    reached: team.reachedAnswer
-                });
-            }
-        });
-    });
-});
-
-router.get("/clue/:id", (req: Request, res: Response) => {
-    Session.findById(req.query.sessionId).then(async session => {
-        if (session === null) {
-            return res.status(404).json({
-                error: "Session not found."
-            });
-        }
-        const room = await Room.findById(session.roomId);
-
-        if (!room) {
-            return res.status(500).end();
-        }
-
-        session.teams.forEach(team => {
-            if (team._id?.toString() === req.params.id) {
-                if (team.reachedAnswer == room.questions.length) {
-                    return res.status(400).json({
-                        error: "Reached end."
-                    });
-                }
-                team.score -= 1;
-                session.save()
-                .then(() => res.json({
-                    clue: room.questions[team.reachedAnswer].clue
-                }))
-                .catch(() => res.status(404).json({
-                    error: "Room not found."
-                }));
-            }
-        });
-    });
-});
-
-router.get("/giveup/:id", (req: Request, res: Response) => {
-    Session.findById(req.query.sessionId).then(async session => {
-        if (session === null) {
-            return res.status(404).json({
-                error: "Session not found."
-            });
-        }
-        const room = await Room.findById(session.roomId);
-
-        if (!room) {
-            return res.status(500).end();
-        }
-
-        session.teams.forEach((team) => {
-            if (team._id?.toString() === req.params.id) {
-                if (team.reachedAnswer == room.questions.length) {
-                    return res.status(400).json({
-                        error: "Reached end."
-                    });
-                }
-                team.reachedAnswer++;
-                team.score -= 2;
-                session.save()
-                    .then((session) => res.send(session))
-                    .catch(() => res.status(404).json({
-                        error: "Room not found."
-                    }));
-            }
-        });
-    });
 });
 
 const createTeamSchema = Joi.object({
@@ -151,8 +64,9 @@ router.post("/", async (req: Request, res: Response) => {
     session.teams.push({
         name: req.body.name,
         answers: [],
-        score: 0,
-        reachedAnswer: 0
+        answered: Array(room.questions.length).fill('no'),
+        clued: Array(room.questions.length).fill(false),
+        score: 0
     });
     session.save()
         .then((session) => res.send(session))
@@ -162,8 +76,101 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 const submitQuestionSchema = Joi.object({
-    questionIndex: Joi.number().required(),
+    index: Joi.number().required(),
     answer: Joi.string().required()
+});
+
+const submitClueSchema = Joi.object({
+    index: Joi.number().required()
+});
+
+router.post("/clue/:id", (req: Request, res: Response) => {
+    const {error} = submitClueSchema.validate(req.body);
+    if (error) return res.status(400).json(error);
+    Session.findById(req.query.sessionId).then(async session => {
+        if (session === null)
+            return res.status(404).json({
+                error: "Session not found."
+            });
+        const team = session.teams.find(
+            team => team._id?.toString() === req.params.id
+        );
+        if (!team)
+            return res.status(404).json({
+                error: "Team not found."
+            });
+        try {
+            const room = await Room.findById(session.roomId);
+            if (!room)
+                return res.status(500).end();
+            if (
+                req.body.index < 0 || 
+                req.body.index >= room.questions.length
+            )
+                return res.status(400).json({
+                    error: "Invalid question index."
+                });
+            if (team.clued[req.body.index] == true) {
+                return res.json({error: "Clue already given."});
+            }
+
+            team.answers.push("Requested clue for question " + req.body.index + " at " + new Date());
+            team.clued[req.body.index] = true;
+            team.score -= 1;
+
+            res.json(await session.save());
+        } catch {
+            return res.status(500).end();
+        }
+    })
+    .catch(() => res.status(404))
+    .finally(() => res.status(200));
+});
+
+router.post("/giveup/:id", (req: Request, res: Response) => {
+    const {error} = submitClueSchema.validate(req.body);
+    if (error) return res.status(400).json(error);
+    Session.findById(req.query.sessionId).then(async session => {
+        if (session === null)
+            return res.status(404).json({
+                error: "Session not found."
+            });
+        const team = session.teams.find(
+            team => team._id?.toString() === req.params.id
+        );
+        if (!team)
+            return res.status(404).json({
+                error: "Team not found."
+            });
+
+        try {
+            const room = await Room.findById(session.roomId);
+            if (!room)
+                return res.status(500).end();
+            if (
+                req.body.index < 0 || 
+                req.body.index >= room.questions.length
+            )
+            
+                return res.status(400).json({
+                    error: "Invalid question index."
+                });
+
+            if (team.answered[req.body.index] != 'no') {
+                return res.json({error: "Question already answered."});
+            }
+
+            team.answers.push("Gave up on question " + req.body.index + " at " + new Date());
+            team.answered[req.body.index] = 'gave up';
+            team.score -= 3;
+
+            res.json(await session.save());
+        } catch {
+            return res.status(500).end();
+        }
+    })
+    .catch(() => res.status(404))
+    .finally(() => res.status(200));
 });
 
 router.post("/submit/:id", (req: Request, res: Response) => {
@@ -188,13 +195,19 @@ router.post("/submit/:id", (req: Request, res: Response) => {
                 if (!room)
                     return res.status(500).end();
                 if (
-                    req.body.questionIndex < 0 || 
-                    req.body.questionIndex >= room.questions.length
+                    req.body.index < 0 || 
+                    req.body.index >= room.questions.length
                 )
                     return res.status(400).json({
                         error: "Invalid question index."
                     });
-                team.answers.push("Answered \"" + req.body.answer + "\" at " + new Date());
+                team.answers.push("Answered \"" + req.body.answer + "\" at " + new Date() + " for question number " + req.body.index);
+                if (req.body.answer === room.questions[req.body.index].answer) {
+                    team.score += 2;
+                    team.answered[req.body.index] = 'yes';
+                } else {
+                    team.score -= 1;
+                }
                 res.json(await session.save());
             } catch {
                 return res.status(500).end();

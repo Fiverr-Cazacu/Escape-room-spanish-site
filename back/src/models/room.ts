@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 export interface IQuestion {
     statement: string,
     clue?: string,
-    answer: string
+    answer: string,
+    clueImage?: string,
+    answerImage: string
 }
 
 const questionSchema = new mongoose.Schema<IQuestion>({
@@ -15,6 +17,14 @@ const questionSchema = new mongoose.Schema<IQuestion>({
     answer: {
         type: String,
         required: true
+    },
+    clueImage: {
+        type: String,
+        required: false
+    },
+    answerImage: {
+        type: String,
+        required: false
     }
 });
 

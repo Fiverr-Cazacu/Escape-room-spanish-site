@@ -1,16 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { Validators, FormBuilder } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
-import { Select, Store } from '@ngxs/store';
-import { Observable } from 'rxjs';
-import { EscapeRoomModalComponent } from '../admin/escape-room-modal/escape-room-modal.component';
 import { QuestionModalComponent } from '../admin/question-modal/question-modal.component';
-import { Room } from '../state-management/models';
-import { GetRooms, AddRoom, GetSessions, AddSession } from '../state-management/actions';
-import { RoomState } from '../state-management/room.state';
-import { SessionState } from '../state-management/session.state';
 import { HttpClient } from '@angular/common/http';
 import { SessionModalComponent } from './session-modal/session-modal.component';
+import { link } from '../link';
 
 @Component({
   selector: 'app-session',
@@ -46,11 +40,11 @@ export class SessionComponent {
   constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
 
   ngOnInit() {
-    this._http.get('https://escape-room-site.onrender.com/api/rooms').subscribe({
-      next: (val) => this.data = val
+    this._http.get(link+'rooms').subscribe({
+      next: (val) => {this.data = val; this.console.log(val)}
     })
-    this._http.get('https://escape-room-site.onrender.com/api/sessions').subscribe({
-      next: (val) => this.sessions = val
+    this._http.get(link+'sessions').subscribe({
+      next: (val) => {this.sessions = val; this.console.log(val)}
     })
   }
 
@@ -100,11 +94,11 @@ export class SessionComponent {
 
   createSession() {
     if (this.currentSession.formGroup.valid) {
-      this._http.post('https://escape-room-site.onrender.com/api/sessions', {
+      this._http.post(link+'sessions', {
         duration: this.currentSession.formGroup.controls.duration.value * 60 * 1000,
         roomId: this.selectedRoom
       }).subscribe({
-        next: (val) => this.console.log(val),
+        next: (val) => {this.console.log(val); window.location.reload()},
         error: (err) => this.console.log(err)
       })
       console.log({

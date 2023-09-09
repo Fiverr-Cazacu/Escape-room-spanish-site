@@ -3,12 +3,8 @@ import { ModalController } from '@ionic/angular';
 import { QuestionModalComponent } from './question-modal/question-modal.component';
 import { FormBuilder, Validators } from '@angular/forms';
 import { EscapeRoomModalComponent } from './escape-room-modal/escape-room-modal.component';
-import { RoomState } from '../state-management/room.state';
-import { Observable } from 'rxjs';
-import { AddRoom, GetRooms } from '../state-management/actions';
-import { Select, Store } from '@ngxs/store';
-import { Room } from '../state-management/models';
 import { HttpClient } from '@angular/common/http';
+import { link } from '../link';
 
 @Component({
   selector: 'app-admin',
@@ -18,13 +14,16 @@ export class AdminPage {
   currentQuestion = this._fb.group({
     statement: ['', [Validators.required]],
     answer: ['', [Validators.required]],
-    clue: ['', [Validators.required]]
+    clue: ['', [Validators.required]],
+    answerImage: [''],
+    clueImage: ['']
   });
 
   currentEscapeRoom: any = {
     questions: [],
     formGroup: this._fb.group({
-      title: ['', Validators.required]
+      title: ['', Validators.required],
+      link: ['', Validators.required]
     })
   };
 
@@ -42,7 +41,7 @@ export class AdminPage {
   constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
 
   ngOnInit() {
-    this._http.get('https://escape-room-site.onrender.com/api/rooms').subscribe({
+    this._http.get(link+'rooms').subscribe({
       next: (val) => {
         this.data = val;
       }
@@ -54,12 +53,11 @@ export class AdminPage {
   }
 
   async openQuestionModal(question: any) {
+    console.log(question)
     const modal = await this._modal.create({
       component: QuestionModalComponent,
       componentProps: {
-        questionTitle: question.statement,
-        questionAnswer: question.answer,
-        questionClue: question.clue,
+        question: question
       },
       presentingElement: document.querySelector('ion-modal')!,
     });
@@ -77,7 +75,8 @@ export class AdminPage {
       componentProps: {
         title: escapeRoom.name,
         questions: escapeRoom.questions,
-        currentQuestionID: escapeRoom._id
+        currentQuestionID: escapeRoom._id,
+        link: escapeRoom.description
       },
       presentingElement: document.querySelector('ion-router-outlet')!,
     });
@@ -100,13 +99,14 @@ export class AdminPage {
 
   createEscapeRoom() {
     if (this.currentEscapeRoom.formGroup.valid && this.currentEscapeRoom.questions.length > 0) {
-      this._http.post('https://escape-room-site.onrender.com/api/rooms', {
+      this._http.post(link+'rooms', {
         name: this.currentEscapeRoom.formGroup.controls.title.value,
-        description: "description",
+        description: this.currentEscapeRoom.formGroup.controls.link.value,
         questions: this.currentEscapeRoom.questions
       }).subscribe({
         next: (val) => {
           console.log("Room created");
+          window.location.reload();
         },
         error: (err) => {
           console.log("Room not created");

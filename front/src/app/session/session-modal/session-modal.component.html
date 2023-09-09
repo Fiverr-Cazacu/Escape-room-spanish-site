@@ -7,6 +7,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+    <p class="ion-padding">{{locationOrigin()}}/escape-room/{{session._id}}</p>
     <ion-list-header>Teams</ion-list-header>
     <form [formGroup]="teamForm" (ngSubmit)="submit()">
         <ion-button type="submit" id='new-question-trigger' class='ion-padding-horizontal ion-margin-top' expand='block'>

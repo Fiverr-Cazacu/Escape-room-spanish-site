@@ -1,15 +1,23 @@
+<ion-header [translucent]='true'>
+    <ion-toolbar>
+        <ion-buttons>
+            <ion-button routerLink="../admin" slot="start"> Rooms </ion-button>
+        </ion-buttons>
+        <ion-title>Session</ion-title>
+    </ion-toolbar>
+</ion-header>
 <ion-content style='overscroll-behavior-y: none' [fullscreen]='true'>
     <ion-header collapse='condense'>
         <ion-toolbar>
-            <ion-title size='large'>Session</ion-title>
+            <ion-title size='large'>Sessions</ion-title>
         </ion-toolbar>
     </ion-header>
     <ion-list style='background: transparent'>
-        <ion-button id='open-create' expand='block' class='ion-padding'>
+        <ion-button (click)="createModal.isOpen = true" expand='block' class='ion-padding'>
             <ion-icon style='margin-right: 0.5rem' name='add'></ion-icon>
             Create session
         </ion-button>
-        <ion-modal #createModal trigger='open-create' [canDismiss]='canDismiss'
+        <ion-modal (ionModalDidDismiss)="createModal.isOpen = false" #createModal trigger='open-create' [canDismiss]='canDismiss'
                    [presentingElement]="document.querySelector('ion-router-outlet')">
             <ng-template>
                 <ion-header [translucent]='true'>

@@ -30,15 +30,19 @@ const createRoomSchema = Joi.object({
     questions: Joi.array().items(Joi.object({
         statement: Joi.string().required(),
         clue: Joi.string(),
-        answer: Joi.string().required()
+        answer: Joi.string().required(),
+        clueImage: Joi.string().required(),
+        answerImage: Joi.string().required()
     })).required().min(1)
 });
 
 router.post("/", (req: Request, res: Response) => {
+    console.log(req.body)
     const {error} = createRoomSchema.validate(req.body);
     if (error)
         return res.status(400).json({ error });
     const room = new Room(req.body);
+    console.log(room)
     room.save()
         .then((room: IRoom) => res.send(room))
         .catch(() => res.status(400).json({

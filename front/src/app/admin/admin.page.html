@@ -1,9 +1,11 @@
 <ion-header [translucent]='true'>
     <ion-toolbar>
+        <ion-buttons>
+            <ion-button routerLink="../session" slot="start"> Session </ion-button>
+        </ion-buttons>
         <ion-title>Escape rooms</ion-title>
     </ion-toolbar>
 </ion-header>
-
 <ion-content style='overscroll-behavior-y: none' [fullscreen]='true'>
     <ion-header collapse='condense'>
         <ion-toolbar>
@@ -30,13 +32,18 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content>
-                    <ion-list-header>Title</ion-list-header>
-                    <ion-list [inset]='true'>
-                        <form [formGroup]='currentEscapeRoom.formGroup'>
+                    <form [formGroup]='currentEscapeRoom.formGroup'>
+                        <ion-list-header>Title</ion-list-header>
+                        <ion-list [inset]='true'>
                             <ion-input formControlName='title' class='ion-padding'
-                                       placeholder='Enter escape room title...' color='primary'></ion-input>
-                        </form>
-                    </ion-list>
+                                   placeholder='Enter escape room title...' color='primary'></ion-input>
+                        </ion-list>
+                        <ion-list-header>Link</ion-list-header>
+                        <ion-list [inset]='true'>
+                            <ion-input formControlName='link' class='ion-padding'
+                                   placeholder='Enter escape room youtube video link...' color='primary'></ion-input>
+                        </ion-list>
+                    </form>
                     <ion-modal #newQuestion [presentingElement]='document.querySelector("ion-modal")'
                                trigger='new-question-trigger'>
                         <ng-template>
@@ -66,11 +73,15 @@
                                     <ion-list [inset]='true'>
                                         <ion-input formControlName='answer' class='ion-padding'
                                                    placeholder='Enter answer...'></ion-input>
+                                        <ion-input formControlName='answerImage' class='ion-padding'
+                                                   placeholder='Enter answer image link...'></ion-input>
                                     </ion-list>
                                     <ion-list-header>Clue</ion-list-header>
                                     <ion-list [inset]='true'>
                                         <ion-input formControlName='clue' class='ion-padding'
                                                    placeholder='Enter clue...'></ion-input>
+                                        <ion-input formControlName='clueImage' class='ion-padding'
+                                                   placeholder='Enter clue image link...'></ion-input>
                                     </ion-list>
                                 </form>
                             </ion-content>

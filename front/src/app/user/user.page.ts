@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { link } from '../link';
 
 @Component({
   selector: 'app-user',
@@ -15,10 +16,12 @@ export class UserPage {
   clue: string = '';
 
   data: any = {
+    room: '',
     title: '',
-    question: '',
+    questions: [],
     deadline: new Date('Sept 8, 2023 16:30:00').getTime(),
-    isFinished: false
+    isFinished: false,
+    score: 0
   };
   answers: any = [];
   answerForm = this._fb.group({
@@ -52,22 +55,24 @@ export class UserPage {
     this.sessionID = this._route.snapshot.paramMap.get('sessionID');
     this.teamID = this._route.snapshot.paramMap.get('teamID');
 
-    console.log(699)
-
-    this._http.get('http://localhost:8000/api/teams/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+    this._http.get(link+'teams/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
       next: (val: any) => {
-        this.data.title = val.name;
-        //this.data.deadline = val.end;
-        //console.log(val.end)
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    });
+        let ok = false;
+        for (let question of val.questions) {
+          if (question.answered == 'no') {
+            ok = true;
+          }
+        }
 
-    this._http.get('http://localhost:8000/api/teams/state/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
-      next: (val: any) => {
-        this.data.question = val.statement;
+        if (!ok) {
+          window.location.href = '../ended?score=' + val.score;
+        }
+
+        this.data.title = val.teamName;
+        this.data.room = val.roomName;
+        this.data.questions = val.questions;
+        this.data.deadline = val.deadline;
+        this.data.score = val.score;
         console.log(val)
       },
       error: (err) => {
@@ -76,16 +81,11 @@ export class UserPage {
     });
   }
 
-  onSubmit() {
-    
-  }
-
-  requestClue() {
-    if (this.clue == '') {
-      this._http.get('http://localhost:8000/api/teams/clue/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
+  onSubmit(index: number) {
+    if (this.data.questions[index].answered == 'no' && this.answerForm.valid) {
+      this._http.post(link+'teams/submit/'+this.teamID+'?sessionId='+this.sessionID, {index: index, answer: this.answerForm.controls.answer.value}).subscribe({
         next: (val: any) => {
-          this.clue = val.clue
-          console.log(val)
+          window.location.reload();
         },
         error: (err) => {
           console.log(err)
@@ -94,15 +94,29 @@ export class UserPage {
     }
   }
 
-  giveUp() {
-    this._http.get('http://localhost:8000/api/teams/giveup/'+this.teamID+'?sessionId='+this.sessionID).subscribe({
-      next: (val: any) => {
-        console.log(val)
-        window.location.reload();
-      },
-      error: (err) => {
-        console.log(err)
-      }
-    });
+  requestClue(index: number) {
+    if (this.data.questions[index].clue == null) {
+      this._http.post(link+'teams/clue/'+this.teamID+'?sessionId='+this.sessionID, {index: index}).subscribe({
+        next: (val: any) => {
+          window.location.reload();
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      });
+    }
+  }
+
+  giveUp(index: number) {
+    if (this.data.questions[index].answered == 'no') {
+      this._http.post(link+'teams/giveup/'+this.teamID+'?sessionId='+this.sessionID, {index: index}).subscribe({
+        next: (val: any) => {
+          window.location.reload();
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      });
+    }
   }
 }

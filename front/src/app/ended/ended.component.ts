@@ -5,5 +5,7 @@ import { Component } from '@angular/core';
   templateUrl: './ended.component.html'
 })
 export class EndedComponent {
-
+  getScore() {
+    return new URLSearchParams(document.location.search).get('score');
+  }
 }
