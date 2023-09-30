@@ -53,6 +53,8 @@ export class EscapeRoomComponent {
         this._http.get(link+'rooms/'+val.roomId).subscribe({
           next: (val2) => {
             this.room = val2;
+            (<HTMLIFrameElement>document.getElementById('iframe')).src = this.room.description.split(' ')[0];
+            (<HTMLIFrameElement>document.getElementById('iframe2')).src = this.room.description.split(' ')[1];
           }
         });
       }

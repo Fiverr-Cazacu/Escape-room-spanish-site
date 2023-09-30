@@ -5,6 +5,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { EscapeRoomModalComponent } from './escape-room-modal/escape-room-modal.component';
 import { HttpClient } from '@angular/common/http';
 import { link } from '../link';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -23,7 +24,8 @@ export class AdminPage {
     questions: [],
     formGroup: this._fb.group({
       title: ['', Validators.required],
-      link: ['', Validators.required]
+      link: [''],
+      link2: ['']
     })
   };
 
@@ -38,7 +40,7 @@ export class AdminPage {
   protected readonly document = document;
   protected readonly console = console;
 
-  constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
+  constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient, private _authService: AuthService) { }
 
   ngOnInit() {
     this._http.get(link+'rooms').subscribe({
@@ -101,7 +103,7 @@ export class AdminPage {
     if (this.currentEscapeRoom.formGroup.valid && this.currentEscapeRoom.questions.length > 0) {
       this._http.post(link+'rooms', {
         name: this.currentEscapeRoom.formGroup.controls.title.value,
-        description: this.currentEscapeRoom.formGroup.controls.link.value,
+        description: this.currentEscapeRoom.formGroup.controls.link.value + ' ' + this.currentEscapeRoom.formGroup.controls.link2.value,
         questions: this.currentEscapeRoom.questions
       }).subscribe({
         next: (val) => {
@@ -127,5 +129,13 @@ export class AdminPage {
     } else if (this.currentEscapeRoom.questions.length === 0) {
       this.erQuestionToast = true;
     }
+  }
+
+  isAuthentificated(): boolean {
+    return this._authService.getAuthState();
+  }
+
+  authentificate(pass: string | null | undefined | number): void {
+    this._authService.authentificate(pass);
   }
 }

@@ -1,6 +1,8 @@
 import Room, { IRoom } from "../models/room";
 import express, {Request, Response} from "express";
 import Joi from "joi";
+import Session from "../models/session";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -60,7 +62,9 @@ router.put("/:id", (req: Request, res: Response) => {
 
 router.delete("/:id", (req: Request, res: Response) => {
     Room.findByIdAndDelete(req.params.id)
-        .then(() => res.end())
+        .then(() => {
+            Session.deleteMany({ roomId: new mongoose.Types.ObjectId(req.params.id) }).then(() => {res.end()}).catch();
+        })
         .catch(() => res.status(404).json({
             error: "Room not found."
         }));

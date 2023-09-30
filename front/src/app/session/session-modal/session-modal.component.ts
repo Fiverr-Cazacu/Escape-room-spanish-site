@@ -13,6 +13,10 @@ export class SessionModalComponent {
   @Input() session: any;
   @Input() roomName!: string;
 
+  copy(text: string) {
+    navigator.clipboard.writeText(text);
+  }
+
   teamForm: any = this._fb.group({
     name: ['', Validators.required]
   });
@@ -46,6 +50,6 @@ export class SessionModalComponent {
   }
 
   locationOrigin() {
-    return window.location.origin;
+    return window.location.origin + '/escaperoom/#';
   }
 }

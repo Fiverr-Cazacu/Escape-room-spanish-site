@@ -65,7 +65,7 @@ export class UserPage {
         }
 
         if (!ok) {
-          window.location.href = '../ended?score=' + val.score;
+          window.location.href = window.origin + '/escaperoom/#/ended?score=' + val.score;
         }
 
         this.data.title = val.teamName;

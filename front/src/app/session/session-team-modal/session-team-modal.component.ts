@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -10,6 +10,10 @@ import { ModalController } from '@ionic/angular';
 export class SessionTeamModal {
   @Input() session: any;
   @Input() team: any;
+
+  copy(text: string) {
+    navigator.clipboard.writeText(text);
+  }
 
   constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
 
@@ -22,6 +26,6 @@ export class SessionTeamModal {
   }
 
   locationOrigin() {
-    return window.location.origin
+    return window.location.origin + '/escaperoom/#';
   }
 }

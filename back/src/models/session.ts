@@ -27,6 +27,7 @@ const teamSchema = new mongoose.Schema<ITeam>({
 
 export interface ISession {
     _id?: mongoose.Schema.Types.ObjectId,
+    name: string
     roomId: mongoose.Schema.Types.ObjectId,
     teams: ITeam[],
     duration: number,
@@ -35,6 +36,10 @@ export interface ISession {
 }
 
 const sessionSchema = new mongoose.Schema<ISession>({
+    name: {
+        type: String,
+        required: true
+    },
     roomId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

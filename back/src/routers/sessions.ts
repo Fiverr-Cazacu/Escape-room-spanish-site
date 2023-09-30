@@ -53,7 +53,8 @@ router.get("/:id/running", (req: Request, res: Response) => {
 
 const createSessionSchema = Joi.object({
     roomId: Joi.string().required(),
-    duration: Joi.number().required()
+    duration: Joi.number().required(),
+    name: Joi.string().required()
 });
 
 router.post("/", (req: Request, res: Response) => {
@@ -120,6 +121,14 @@ router.put("/:id/stop", (req: Request, res: Response) => {
             session.startedAt = undefined;
             return res.json(await session.save());
         });
+});
+
+router.delete("/:id", (req: Request, res: Response) => {
+    Session.findByIdAndDelete(req.params.id)
+        .then(() => res.end())
+        .catch(() => res.status(404).json({
+            error: "Session not found."
+        }));
 });
 
 export default router;

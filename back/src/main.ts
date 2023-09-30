@@ -13,7 +13,9 @@ app.use(express.json());
 const cors = require('cors');
 app.use(cors())
 
-mongoose.connect(process.env.MONGODB_URI || "")
+console.log()
+
+mongoose.connect("mongodb+srv://escape:escape12345@escaperoom.ro7f9ed.mongodb.net/?retryWrites=true&w=majority")
     .then(() => console.log("✅ Connected to database"))
     .catch((e) => console.log("❌ Failed to connect to database", e));
 

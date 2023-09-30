@@ -5,6 +5,7 @@ import { QuestionModalComponent } from '../admin/question-modal/question-modal.c
 import { HttpClient } from '@angular/common/http';
 import { SessionModalComponent } from './session-modal/session-modal.component';
 import { link } from '../link';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-session',
@@ -21,7 +22,8 @@ export class SessionComponent {
 
   currentSession: any = {
     formGroup: this._fb.group({
-      duration: ['', Validators.required]
+      duration: ['', Validators.required],
+      name: ['', Validators.required]
     })
   };
 
@@ -37,7 +39,7 @@ export class SessionComponent {
   protected readonly document = document;
   protected readonly console = console;
 
-  constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient) { }
+  constructor(private _modal: ModalController, private _fb: FormBuilder, private _http: HttpClient, private _authService: AuthService) { }
 
   ngOnInit() {
     this._http.get(link+'rooms').subscribe({
@@ -94,9 +96,11 @@ export class SessionComponent {
 
   createSession() {
     if (this.currentSession.formGroup.valid) {
+      this.console.log(this.currentSession.formGroup.controls.name.value, this.currentSession.formGroup.controls.duration.value)
       this._http.post(link+'sessions', {
         duration: this.currentSession.formGroup.controls.duration.value * 60 * 1000,
-        roomId: this.selectedRoom
+        roomId: this.selectedRoom,
+        name: this.currentSession.formGroup.controls.name.value
       }).subscribe({
         next: (val) => {this.console.log(val); window.location.reload()},
         error: (err) => this.console.log(err)
@@ -116,5 +120,13 @@ export class SessionComponent {
 
   getName(id: string) {
     return this.data.filter((item: any) => item._id == id)[0].name;
+  }
+
+  isAuthentificated(): boolean {
+    return this._authService.getAuthState();
+  }
+
+  authentificate(pass: string | null | undefined | number): void {
+    this._authService.authentificate(pass);
   }
 }

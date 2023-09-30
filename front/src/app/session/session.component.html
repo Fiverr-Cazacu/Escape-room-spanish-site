@@ -6,7 +6,7 @@
         <ion-title>Session</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content style='overscroll-behavior-y: none' [fullscreen]='true'>
+<ion-content *ngIf="isAuthentificated()" style='overscroll-behavior-y: none' [fullscreen]='true'>
     <ion-header collapse='condense'>
         <ion-toolbar>
             <ion-title size='large'>Sessions</ion-title>
@@ -32,9 +32,10 @@
                     </ion-toolbar>
                 </ion-header>
                 <ion-content>
-                    <ion-list-header>Duration</ion-list-header>
                     <ion-list [inset]='true'>
                         <form [formGroup]='currentSession.formGroup'>
+                            <ion-input formControlName='name' class='ion-padding'
+                                       placeholder='Enter session name...' color='primary'></ion-input>
                             <ion-input type="number" min="1" formControlName='duration' class='ion-padding'
                                        placeholder='Enter session duration (minutes)...' color='primary'></ion-input>
                         </form>
@@ -82,7 +83,7 @@
         </ion-modal>
         <ion-card (click)='openSessionModal(item)' [button]='true' *ngFor='let item of sessions'>
             <ion-card-header>
-                <ion-card-title>{{item._id}}</ion-card-title>
+                <ion-card-title>{{item.name}}</ion-card-title>
             </ion-card-header>
             <ion-card-content>
                 <p>Based on: {{getName(item.roomId)}}</p>
@@ -100,4 +101,12 @@
                (didDismiss)='qAnswerToast = false'></ion-toast>
     <ion-toast [isOpen]='qClueToast' message='A question must have a clue' [duration]='3000'
                (didDismiss)='qClueToast = false'></ion-toast>
+</ion-content>
+<ion-content style="display: flex; align-items: center; flex-direction: column;" *ngIf="!isAuthentificated()">
+    <ion-row style="justify-content: center;">
+        <ion-input #pass style="width: 20%;" placeholder="password"></ion-input>
+    </ion-row>
+    <ion-row style="justify-content: center;">
+        <ion-button (click)="authentificate(pass.value)">Submit</ion-button>
+    </ion-row>
 </ion-content>
