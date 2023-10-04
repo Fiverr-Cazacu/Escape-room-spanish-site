@@ -1,25 +1,33 @@
 <ion-header [translucent]='true'>
     <ion-toolbar>
-        <ion-title>{{ room.name }}</ion-title>
+        <ion-title>{{ session.name }}</ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-button (click)="watched = !watched" *ngIf="!watched" expand="block">
+    <ion-button (click)="localStorage.setItem(sId, 'true'); reload()" *ngIf="showBeginButton()" expand="block">
         Begin escape room
     </ion-button>
     <ion-row>
-        <iframe id="iframe" style="background-color: aliceblue;" [ngStyle]="{'display': watched?'block': 'none'}" width="560" height="315" allowfullscreen></iframe>
+        <iframe [ngStyle]="{'display': showStartVideo() ? 'block' : 'none'}" id="iframe" style="background-color: aliceblue;" width="1120" height="630" allowfullscreen></iframe>
     </ion-row>
-    <ion-button *ngIf="watched" expand="block" (click)="started?stopSession():startSession()">
-        {{ started?'Stop session':'Start session'}}
+    <ion-button *ngIf="showStartButton()" expand="block" (click)="presentAlert()">
+        {{ started?'Detener la Escape Room':'Empezar Escape Room'}}
     </ion-button>
-    <h1  *ngIf="watched" style="color: white;">
-        Timer: {{started?(distance < 0?"Finished":(hours + ':' + minutes + ':' + seconds)):"Not started"}}
+    <ion-button *ngIf="showTimer()" expand="block" (click)="endSession()">
+        Detener la Escape Room
+    </ion-button>
+    <h1 *ngIf="showTimer()" style="color: white; text-align: center; font-size: 20vw;">
+        {{started?(distance < 0?"Finished":(hours + ':' + minutes + ':' + seconds)):"Not started"}}
     </h1>
-    <ion-list [ngStyle]="{'display': distance < 0 ? 'initial' : 'none'}">
-        <ion-item *ngFor="let team of session.teams; let i = index">{{i + 1}}. {{team.name}}: {{team.score}} points; Question: {{team.reachedAnswer + 1}}</ion-item>
+    <ion-list [ngStyle]="{'display': showEndScreen() ? 'initial' : 'none'}">
+        <div #rank style="display: none;">
+            <ion-item *ngFor="let team of session.teams; let i = index">{{i + 1}}. {{team.name}}: {{team.score}} Puntos; Question: {{team.reachedAnswer + 1}}</ion-item>
+        </div>
         <ion-row>
-            <iframe id="iframe2" style="background-color: aliceblue;" [ngStyle]="{'display': watched?'block': 'none'}" width="560" height="315" allowfullscreen></iframe>
+            <iframe #iframe2 id="iframe2" style="background-color: aliceblue;" [ngStyle]="{'display': watched?'block': 'none'}" width="1120" height="630" allowfullscreen></iframe>
         </ion-row>
     </ion-list>
+    <ion-button *ngIf="showEndScreen()" expand="block" (click)="rank.style.display = 'block'; iframe2.style.display = 'none'">
+        Mostrar Ranking
+    </ion-button>
 </ion-content>

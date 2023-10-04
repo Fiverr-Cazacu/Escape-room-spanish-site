@@ -9,7 +9,7 @@
         <ion-toolbar>
             <ion-title size='large'>
                 <div style="display: flex; justify-content: space-between;">
-                    <span>{{data.title}} ({{data.score}} points)</span>
+                    <span>{{data.title}} ({{data.score}} Puntos)</span>
                 </div>
             </ion-title>
         </ion-toolbar>
@@ -23,7 +23,7 @@
             <ion-button *ngIf='question.clue == null' color='tertiary' class='ion-padding-horizontal' expand='block'
                     (click)='requestClue(i)'>
                 <ion-icon style='margin-right: 0.5rem' [name]='isClue ? "eye-off-outline" : "eye-outline"'></ion-icon>
-                Get clue
+                Pedir Pista
             </ion-button>
             <ion-list *ngIf='question.clue != null' [inset]='true'>
                 <ion-item>Clue: {{question.clue}}</ion-item>
@@ -32,18 +32,18 @@
             <ion-button *ngIf='distance > 0 && ! data.isFinished' color='tertiary' class='ion-padding-horizontal' expand='block'
                         (click)='giveUp(i)'>
                 <ion-icon style='margin-right: 0.5rem' [name]='isClue ? "eye-off-outline" : "eye-outline"'></ion-icon>
-                Give up on qustion
+                Redirte
             </ion-button>
-            <ion-list-header *ngIf='distance > 0 && ! data.isFinished' style='font-size: 1.375rem'>Your answer</ion-list-header>
+            <ion-list-header *ngIf='distance > 0 && ! data.isFinished' style='font-size: 1.375rem'>Escribe aquí la solución</ion-list-header>
             <form *ngIf='distance > 0 && ! data.isFinished' [formGroup]='answerForm'>
                 <ion-list [inset]='true'>
-                    <ion-input formControlName='answer' placeholder='Enter your answer...' class='ion-padding'></ion-input>
+                    <ion-input formControlName='answer' placeholder='Escribe aquí la solución...' class='ion-padding'></ion-input>
                 </ion-list>
-                <ion-button (click)='onSubmit(i)' class='ion-padding-horizontal' expand='block'>Submit</ion-button>
+                <ion-button (click)='onSubmit(i)' class='ion-padding-horizontal' expand='block'>Validar</ion-button>
             </form>
         </div>
         <div *ngIf="question.answered != 'no'" class="ion-padding">
-            {{question.answered=='gave up'?"You gave up on this question":"You already answered this question"}}
+            {{question.answered=='gave up'?"You gave up on this question":"Preguntas Acertadas"}}
         </div>
         <ion-img *ngIf="question.answered == 'gave up'" [src]="question.answeredImage"></ion-img>
     </ion-card>

@@ -123,6 +123,18 @@ router.put("/:id/stop", (req: Request, res: Response) => {
         });
 });
 
+router.put("/:id/end", (req: Request, res: Response) => {
+    Session.findById(req.params.id)
+        .then(async session => {
+            if (!session)
+                return res.status(404).json({
+                    error: "Session not found."
+                });
+            session.startedAt = new Date('01.01.2000');
+            return res.json(await session.save());
+        });
+});
+
 router.delete("/:id", (req: Request, res: Response) => {
     Session.findByIdAndDelete(req.params.id)
         .then(() => res.end())

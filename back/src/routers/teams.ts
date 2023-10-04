@@ -116,7 +116,7 @@ router.post("/clue/:id", (req: Request, res: Response) => {
 
             team.answers.push("Requested clue for question " + req.body.index + " at " + new Date());
             team.clued[req.body.index] = true;
-            team.score -= 1;
+            team.score -= 2;
 
             res.json(await session.save());
         } catch {
@@ -162,7 +162,7 @@ router.post("/giveup/:id", (req: Request, res: Response) => {
 
             team.answers.push("Gave up on question " + req.body.index + " at " + new Date());
             team.answered[req.body.index] = 'gave up';
-            team.score -= 3;
+            team.score -= 5;
 
             res.json(await session.save());
         } catch {
@@ -203,10 +203,10 @@ router.post("/submit/:id", (req: Request, res: Response) => {
                     });
                 team.answers.push("Answered \"" + req.body.answer + "\" at " + new Date() + " for question number " + req.body.index);
                 if (req.body.answer === room.questions[req.body.index].answer) {
-                    team.score += 2;
+                    team.score += 10;
                     team.answered[req.body.index] = 'yes';
                 } else {
-                    team.score -= 1;
+                    team.score -= 2;
                 }
                 res.json(await session.save());
             } catch {

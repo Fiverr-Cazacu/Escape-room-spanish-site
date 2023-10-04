@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { link } from '../link';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-escape-room',
@@ -17,6 +18,8 @@ export class EscapeRoomComponent {
   session: any = {teams: []};
 
   room: any = {name: ''};
+
+  sId: any;
 
   hours: string = '';
   minutes: string = '';
@@ -39,10 +42,16 @@ export class EscapeRoomComponent {
     this.seconds = seconds.toString().padStart(2, '0');
   }, 1000);
 
-  constructor (private _route: ActivatedRoute, private _http: HttpClient) { }
+  constructor (private _route: ActivatedRoute, private _http: HttpClient, private alertController: AlertController) { }
 
   ngOnInit(): void {
     const sessionID = this._route.snapshot.paramMap.get('session');
+
+    this.sId = sessionID;
+
+    if (localStorage.getItem(this.sId) === null) {
+      localStorage.setItem(this.sId, 'false');
+    }
 
     this._http.get(link+'sessions/'+sessionID).subscribe({
       next: (val: any) => {
@@ -53,8 +62,9 @@ export class EscapeRoomComponent {
         this._http.get(link+'rooms/'+val.roomId).subscribe({
           next: (val2) => {
             this.room = val2;
-            (<HTMLIFrameElement>document.getElementById('iframe')).src = this.room.description.split(' ')[0];
+            console.log(this.room.description.split(' '));
             (<HTMLIFrameElement>document.getElementById('iframe2')).src = this.room.description.split(' ')[1];
+            (<HTMLIFrameElement>document.getElementById('iframe')).src = this.room.description.split(' ')[0];
           }
         });
       }
@@ -68,10 +78,59 @@ export class EscapeRoomComponent {
     });
   }
 
-  stopSession() {
-    localStorage.setItem('watched', 'false');
-    this._http.put(link+'sessions/'+this.session._id+'/stop', {}).subscribe({
+  endSession() {
+    this._http.put(link+'sessions/'+this.session._id+'/end', {}).subscribe({
       next: () => window.location.reload()
     });
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: `¿Estás seguro/a de que deseas iniciar/detener este Escape Room?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          },
+        },
+        {
+          text: 'OK',
+          role: 'confirm',
+          handler: () => {
+            this.started?0:this.startSession();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+  }
+
+  localStorage = localStorage;
+
+  reload = window.location.reload;
+
+  showBeginButton(): boolean {
+    return localStorage.getItem(this.sId) === 'false';
+  }
+
+  showStartVideo(): boolean {
+    console.log(!(localStorage.getItem(this.sId) === 'false') && !this.started)
+    return !(localStorage.getItem(this.sId) === 'false') && !this.started;
+  }
+
+  showStartButton(): boolean {
+    return !(localStorage.getItem(this.sId) === 'false') && !this.started && this.distance >= 0;
+  }
+
+  showTimer(): boolean {
+    return !(localStorage.getItem(this.sId) === 'false') && this.started && this.distance >= 0;
+  }
+
+  showEndScreen(): boolean {
+    return !(localStorage.getItem(this.sId) === 'false')  && this.started && this.distance < 0;
   }
 }
