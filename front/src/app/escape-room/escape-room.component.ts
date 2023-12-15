@@ -123,7 +123,7 @@ export class EscapeRoomComponent {
   }
 
   showStartButton(): boolean {
-    return !(localStorage.getItem(this.sId) === 'false') && !this.started && this.distance >= 0;
+    return !(localStorage.getItem(this.sId) === 'false') && !this.started;
   }
 
   showTimer(): boolean {
