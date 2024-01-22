@@ -2,10 +2,13 @@
   "name": "escape",
   "version": "1.0.0",
   "description": "escape room rest api",
-  "main": "src/main.ts",
+  "main": "index.ts",
   "scripts": {
-    "start": "ts-node src/main.ts",
-    "dev": "nodemon src/main.ts"
+    "start": "nodemon src/index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -22,9 +25,16 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "joi": "^17.10.1",
-    "mongoose": "^7.5.0"
+    "mongoose": "^7.5.0",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^5.0.5"
   },
   "engines": {
     "node": ">=14.20.1"
-  }
+  },
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ]
 }
