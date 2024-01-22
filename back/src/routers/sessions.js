@@ -1,23 +1,23 @@
-import express, {Request, Response} from "express";
-import Session from "../models/session";
-import Room from "../models/room";
-import Joi from "joi";
+const express = require("express");
+const { Request, Response } = require("express");
+const Session = require("../models/session");
+const Joi = require("joi");
 
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
+router.get("/", (req, res) => {
     Session.find({}) 
         .then((sessions) => res.json(sessions))
         .catch(() => res.status(500).json());
 });
 
-router.get("/:id", (req: Request, res: Response) => {
+router.get("/:id", (req, res) => {
     Session.findById(req.params.id)
         .then((session) => res.json(session))
         .catch(() => res.status(404).end());
 });
 
-router.get("/:id/started", (req: Request, res: Response) => {
+router.get("/:id/started", (req, res) => {
     Session.findById(req.params.id)
         .then((session) => {
             if (!session)
@@ -31,7 +31,7 @@ router.get("/:id/started", (req: Request, res: Response) => {
         }));
 });
 
-router.get("/:id/running", (req: Request, res: Response) => {
+router.get("/:id/running", (req, res) => {
     Session.findById(req.params.id)
         .then((session) => {
             if (!session)
@@ -57,7 +57,7 @@ const createSessionSchema = Joi.object({
     name: Joi.string().required()
 });
 
-router.post("/", (req: Request, res: Response) => {
+router.post("/", (req, res) => {
     const {error} = createSessionSchema.validate(req.body);
     if (error)
         return res.status(400).json({error});
@@ -74,12 +74,12 @@ const updateSessionSchema = Joi.object({
     duration: Joi.number().required()
 });
 
-router.put("/:id", (req: Request, res: Response) => {
+router.put("/:id", (req, res) => {
     const {error} = updateSessionSchema.validate(req.body);
     if (error)
         return res.status(400).json({error});
     Session.findById(req.params.id)
-        .then(async session => {
+        .then(async (session) => {
             if (!session)
                 return res.status(404).json({
                     error: "Session not found."
@@ -96,9 +96,9 @@ router.put("/:id", (req: Request, res: Response) => {
         }));
 });
 
-router.put("/:id/start", (req: Request, res: Response) => {
+router.put("/:id/start", (req, res) => {
     Session.findById(req.params.id)
-        .then(async session => {
+        .then(async (session) => {
             if (!session)
                 return res.status(404).json({
                     error: "Session not found."
@@ -111,9 +111,9 @@ router.put("/:id/start", (req: Request, res: Response) => {
         }));
 });
 
-router.put("/:id/stop", (req: Request, res: Response) => {
+router.put("/:id/stop", (req, res) => {
     Session.findById(req.params.id)
-        .then(async session => {
+        .then(async (session) => {
             if (!session)
                 return res.status(404).json({
                     error: "Session not found."
@@ -123,9 +123,9 @@ router.put("/:id/stop", (req: Request, res: Response) => {
         });
 });
 
-router.put("/:id/end", (req: Request, res: Response) => {
+router.put("/:id/end", (req, res) => {
     Session.findById(req.params.id)
-        .then(async session => {
+        .then(async (session) => {
             if (!session)
                 return res.status(404).json({
                     error: "Session not found."
@@ -135,7 +135,7 @@ router.put("/:id/end", (req: Request, res: Response) => {
         });
 });
 
-router.delete("/:id", (req: Request, res: Response) => {
+router.delete("/:id", (req, res) => {
     Session.findByIdAndDelete(req.params.id)
         .then(() => res.end())
         .catch(() => res.status(404).json({
@@ -143,4 +143,4 @@ router.delete("/:id", (req: Request, res: Response) => {
         }));
 });
 
-export default router;
+module.exports = router;

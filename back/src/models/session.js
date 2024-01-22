@@ -1,15 +1,6 @@
-import mongoose  from "mongoose";
+const mongoose = require("mongoose");
 
-export interface ITeam {
-    _id?: mongoose.Schema.Types.ObjectId,
-    name: string,
-    answers: string[],
-    answered: string[],
-    clued: boolean[],
-    score: number
-}
-
-const teamSchema = new mongoose.Schema<ITeam>({
+const teamSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -25,17 +16,7 @@ const teamSchema = new mongoose.Schema<ITeam>({
     },
 });
 
-export interface ISession {
-    _id?: mongoose.Schema.Types.ObjectId,
-    name: string
-    roomId: mongoose.Schema.Types.ObjectId,
-    teams: ITeam[],
-    duration: number,
-    startedAt?: Date,
-    createdAt: Date
-}
-
-const sessionSchema = new mongoose.Schema<ISession>({
+const sessionSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -58,5 +39,5 @@ const sessionSchema = new mongoose.Schema<ISession>({
     }
 });
 
-const Session = mongoose.model<ISession>("Session", sessionSchema);
-export default Session;
+const Session = mongoose.model("Session", sessionSchema);
+module.exports = Session;

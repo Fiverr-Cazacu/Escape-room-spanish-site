@@ -1,14 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-export interface IQuestion {
-    statement: string,
-    clue?: string,
-    answer: string,
-    clueImage?: string,
-    answerImage: string
-}
-
-const questionSchema = new mongoose.Schema<IQuestion>({
+const questionSchema = new mongoose.Schema({
     statement: {
         type: String,
         required: true
@@ -28,14 +20,7 @@ const questionSchema = new mongoose.Schema<IQuestion>({
     }
 });
 
-export interface IRoom {
-    name: string,
-    description?: string,
-    createdAt: Date,
-    questions: IQuestion[]
-}
-
-const roomSchema = new mongoose.Schema<IRoom>({
+const roomSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -50,5 +35,6 @@ const roomSchema = new mongoose.Schema<IRoom>({
     questions: [questionSchema]
 });
 
-const Room = mongoose.model<IRoom>("Room", roomSchema);
-export default Room;
+const Room = mongoose.model("Room", roomSchema);
+
+module.exports = Room;

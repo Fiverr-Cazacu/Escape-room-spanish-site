@@ -1,11 +1,12 @@
-import Room from "../models/room";
-import Session from "../models/session";
-import express, {Request, Response} from "express";
-import Joi from "joi";
+const Room = require("../models/room");
+const Session = require("../models/session");
+const express = require("express");
+const { Request, Response } = require("express");
+const Joi = require("joi");
 
 const router = express.Router();
 
-router.get("/:id", (req: Request, res: Response) => {
+router.get("/:id", (req, res) => {
     Session.findById(req.query.sessionId)
         .then(session => {
             if (session === null)
@@ -38,7 +39,7 @@ const createTeamSchema = Joi.object({
     name: Joi.string().required()
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", async (req, res) => {
     const {error} = createTeamSchema.validate(req.body);
     if (error)
         return res.status(400).json({ error });
@@ -84,7 +85,7 @@ const submitClueSchema = Joi.object({
     index: Joi.number().required()
 });
 
-router.post("/clue/:id", (req: Request, res: Response) => {
+router.post("/clue/:id", (req, res) => {
     const {error} = submitClueSchema.validate(req.body);
     if (error) return res.status(400).json(error);
     Session.findById(req.query.sessionId).then(async session => {
@@ -127,7 +128,7 @@ router.post("/clue/:id", (req: Request, res: Response) => {
     .finally(() => res.status(200));
 });
 
-router.post("/giveup/:id", (req: Request, res: Response) => {
+router.post("/giveup/:id", (req, res) => {
     const {error} = submitClueSchema.validate(req.body);
     if (error) return res.status(400).json(error);
     Session.findById(req.query.sessionId).then(async session => {
@@ -173,7 +174,7 @@ router.post("/giveup/:id", (req: Request, res: Response) => {
     .finally(() => res.status(200));
 });
 
-router.post("/submit/:id", (req: Request, res: Response) => {
+router.post("/submit/:id", (req, res) => {
     const {error} = submitQuestionSchema.validate(req.body);
     if (error)
         return res.status(400).json(error);
@@ -217,7 +218,7 @@ router.post("/submit/:id", (req: Request, res: Response) => {
         .finally(() => res.status(200));
 });
 
-router.delete("/:teamId", (req: Request, res: Response) => {
+router.delete("/:teamId", (req, res) => {
     Session.findById(req.query.sessionId)
         .then((session) => {
             if (!session)
@@ -237,4 +238,4 @@ router.delete("/:teamId", (req: Request, res: Response) => {
         }));
 });
 
-export default router;
+module.exports = router;
