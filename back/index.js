@@ -1,12 +1,12 @@
 const express = require("express");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+// const dotenv = require("dotenv");
+// const mongoose = require("mongoose");
 
-const RoomsRouter = require("./src/routers/rooms");
-const SessionsRouter = require("./src/routers/sessions");
-const TeamRouter = require("./src/routers/teams");
+// const RoomsRouter = require("./src/routers/rooms");
+// const SessionsRouter = require("./src/routers/sessions");
+// const TeamRouter = require("./src/routers/teams");
 
-dotenv.config();
+// dotenv.config();
 const app = express();
 app.use(express.json());
 
